@@ -1,34 +1,38 @@
 package main
 
-import(
-	"fmt"
-)
-
-type myError struct {
-	Code int
-	Msg string
+type validationError struct {
+	message string
 }
 
-func (e myError) Error() string {
-	return fmt.Sprintf("Code: %d, Msg: %s", e.Code, e.Msg)
+type notFoundError struct {
+	message string
 }
 
-func prosesData(x int) error {
-	if x < 0 {
-		return &myError{
-			Code: 404,
-			Msg: "Data Tidak Ditemukan",
-		}
+func (v *validationError) Error() string {
+	return v.message
+}
+
+func (n *notFoundError) Error() string {
+	return n.message
+}
+
+func SaveData(id string, data any) error {
+	if id == "" {
+		return &validationError{"ID Tidak Boleh Kosong"}
 	}
 
+	if id != "Rafael" {
+		return &notFoundError{"Data Tidak Ditemukan"}
+	}
+
+	//ok 
 	return nil
 }
 
-func main(){
-	err := prosesData(-1)
+func main() {
+	err := SaveData("Rafael", nil)
+
 	if err != nil {
-		fmt.Println("TERJADI ERROR", err.Error())
-	} else {
-		fmt.Println("BERHASIL")
+		println(err.Error())
 	}
 }
